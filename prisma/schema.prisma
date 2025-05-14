@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userid    Int     @id @default(autoincrement())
+  email     String  @unique
+  password  String
+  username  String
+  events    Event[]
+}
+
+model Event {
+  eventid   Int     @id @default(autoincrement())
+  eventname String
+  userid    Int
+  user      User    @relation(fields: [userid], references: [userid], onDelete: Cascade)
+  tasks     Task[]
+}
+
+model Task {
+  taskid     Int        @id @default(autoincrement())
+  taskname   String
+  description String?
+  priority   String
+  duedate    DateTime
+  status     String
+  eventid    Int
+  event      Event      @relation(fields: [eventid], references: [eventid], onDelete: Cascade)
+  subtasks   SubTask[]
+}
+
+model SubTask {
+  subtaskid Int    @id @default(autoincrement())
+  name      String
+  taskid    Int
+  task      Task   @relation(fields: [taskid], references: [taskid], onDelete: Cascade)
+}
